@@ -13,7 +13,7 @@ main () {
 }
 
 do_backup() {
-    borg create -s --list ${BORG_COMPRESSION} "::nexclud-aio-{now:%Y-%m-%dT%H:%M:%S}" \
+    time borg create -s --list ${BORG_COMPRESSION} "::nexclud-aio-{now:%Y-%m-%dT%H:%M:%S}" \
         /mnt/var/lib/docker/volumes/nextcloud_aio_*
 }
 
