@@ -31,6 +31,9 @@ In the directory `storage`
 [manual install]: https://github.com/nextcloud/all-in-one/tree/main/manual-install
 [backup model of Nextcloud AIO Docker]: https://github.com/nextcloud/all-in-one/tree/main/Containers/borgbackup
 
+*_YOU_* Are responsible to keep the backup safe. Use any storage that you want: NAS, USB Stick,
+pushing to other Borg remotes.
+
 ## How to restore?
 
 1. Make sure all the needed volumes exist. Easiest way is to wipe the installation and run from scratch.
