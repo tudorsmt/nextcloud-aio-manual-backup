@@ -5,6 +5,10 @@ with some lazy simplicity on top.
 
 This assumes you went through the [manual install].
 
+The backup model here will back up the entire docker volumes used by the nextcloud AIO
+installation, without any regard for minimum-data-backup practices. Space is cheap
+enough, for now, restoring is much faster.
+
 ## Important files
 
 `.env` in the one-level-up containing the `BORG_PASSPHRASE` variable
@@ -26,3 +30,13 @@ In the directory `storage`
 
 [manual install]: https://github.com/nextcloud/all-in-one/tree/main/manual-install
 [backup model of Nextcloud AIO Docker]: https://github.com/nextcloud/all-in-one/tree/main/Containers/borgbackup
+
+## How to restore?
+
+1. Make sure all the needed volumes exist. Easiest way is to wipe the installation and run from scratch.
+   Be careful not to delete the backup, in the process :)
+2. Make sure all the Nextcloud AIO containers are stopped.
+3. run the backup contaioner
+4. do a `borg list` and pick a backup. Do some creative exploration in case the latest is not good enough.
+5. `borg extract $BORG_REPO::<THE-BACKUP-TAG-YOU-WANT>` and wait
+6. Start the Nextcloud AIO Containers
