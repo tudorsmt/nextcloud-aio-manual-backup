@@ -30,7 +30,7 @@ sanity_check () {
     fi
     if ! list_repo_info; then
         echo "Ensure that a valid borg repository is created at ${BORG_REPO}. See 'borg init'"
-        echo "Or just run 'borg init --encryption=repokey "\"${BORG_REPO}\""' in the backup container "\
+        echo "Or just run 'borg init --encryption=repokey-blake2 "\"${BORG_REPO}\""' in the backup container "\
              "and then rerun the script"
         is_err="1"
     fi
