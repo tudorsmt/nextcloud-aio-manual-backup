@@ -41,7 +41,8 @@ The scripts should be simple enough to not cause too much confusion.
 
 ## Where is my backup?
 
-In the directory `storage`
+In the directory `storage`. It is owned by `root`. If you want to change this, open the container shell
+with `run-backup.sh container` and look around `/mnt/backup/storage`.
 
 [manual install]: https://github.com/nextcloud/all-in-one/tree/main/manual-install
 [backup model of Nextcloud AIO Docker]: https://github.com/nextcloud/all-in-one/tree/main/Containers/borgbackup
