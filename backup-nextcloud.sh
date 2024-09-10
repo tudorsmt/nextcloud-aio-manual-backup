@@ -5,7 +5,7 @@ set -eu -o pipefail
 DOCKER_VOLUMES_DIR=/mnt/var/lib/docker/volumes
 # Change compression if too slow
 # see borg help compression
-BORG_COMPRESSION="-C auto,lzma,9"
+: ${BORG_COMPRESSION:="-C auto,lzma,9"}
 
 main () {
     sanity_check

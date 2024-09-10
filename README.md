@@ -39,6 +39,11 @@ standard location.
 
 The scripts should be simple enough to not cause too much confusion.
 
+## Running the backup script
+
+Just run the `run-backup.sh` script. If backup is running to slow, see the `BORG_COMPRESSION` variable
+in the `backup-nextcloud.sh` script.
+
 ## Where is my backup?
 
 In the directory `storage`. It is owned by `root`. If you want to change this, open the container shell
