@@ -7,14 +7,30 @@ DOCKER_VOLUMES_DIR=/mnt/var/lib/docker/volumes
 # see borg help compression
 : ${BORG_COMPRESSION:="-C auto,lzma,9"}
 
+# These are the volumes to be backed up
+DEFAULT_VOLUMES=(nextcloud_aio_apache
+                 nextcloud_aio_nextcloud
+                 nextcloud_aio_database
+                 nextcloud_aio_database_dump
+                 nextcloud_aio_elasticsearch
+                 nextcloud_aio_nextcloud_data
+                 nextcloud_aio_mastercontainer
+                 )
+
+
 main () {
     sanity_check
     do_backup
+    prune_archives
+    compact_archives
 }
 
 do_backup() {
-    time borg create -s --list ${BORG_COMPRESSION} "::nexclud-aio-{now:%Y-%m-%dT%H:%M:%S}" \
-        /mnt/var/lib/docker/volumes/nextcloud_aio_*
+    borg_command=(borg create -s --list ${BORG_COMPRESSION} "::nexclud-aio-{now:%Y-%m-%dT%H:%M:%S}")
+    for volume in "${DEFAULT_VOLUMES[@]}"; do
+        borg_command+=("${DOCKER_VOLUMES_DIR}/${volume}")
+    done
+    time "${borg_command[@]}"
 }
 
 sanity_check () {
@@ -35,6 +51,13 @@ sanity_check () {
         is_err="1"
     fi
 
+    for volume in "${DEFAULT_VOLUMES[@]}"; do
+        if [ ! -e "${DOCKER_VOLUMES_DIR}/${volume}" ] ; then
+            echo "${volume} is missing which is not intended."
+            exit 1
+        fi
+    done
+
     if [ "$(find "${DOCKER_VOLUMES_DIR}" -mindepth 1 -maxdepth 1 -name "nextcloud_aio_*" | wc -l)" -lt 8 ]; then
         echo "Expecting at least 8 nextcloud volumes, found: "
         find "${DOCKER_VOLUMES_DIR}" -mindepth 1 -maxdepth 1 -name "nextcloud_aio_*"
@@ -50,6 +73,14 @@ sanity_check () {
 list_repo_info () {
     echo "Checking validity of the borg repo ${BORG_REPO}"
     borg info
+}
+
+prune_archives() {
+    # Do not quote variable. We need expansion!
+    borg prune --stats ${BORG_RETENTION_POLICY}
+}
+compact_archives() {
+    borg compact
 }
 
 main "${@}"

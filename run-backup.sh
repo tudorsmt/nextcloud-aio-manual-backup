@@ -8,14 +8,14 @@ source "$(realpath "${SCRIPT_DIR}/../.env")"
 
 BACKUP_STORAGE="${SCRIPT_DIR}/storage"
 DOCKER_LIB_DIR="/var/lib/docker"
-
+BORG_REPO="/mnt/backup/storage"
 
 BACKUP_IMAGE="nextcloud-aio-manual-backup"
 docker_cmd=(docker run -it --rm \
             -v ${DOCKER_LIB_DIR}:/mnt/var/lib/docker
-            -v "${BACKUP_STORAGE}:/mnt/backup/storage"
+            -v "${BACKUP_STORAGE}:${BORG_REPO}"
             -e BORG_PASSPHRASE="${BORG_PASSPHRASE}"
-            -e BORG_REPO=/mnt/backup/storage
+            -e BORG_REPO="${BORG_REPO}"
             "${BACKUP_IMAGE}"
             )
 
@@ -34,7 +34,12 @@ main() {
         *)
             mkdir -p "${BACKUP_STORAGE}"
             echo "Running the backup script"
-            ${docker_cmd[@]} /backup-nextcloud.sh
+            backup_ec=0
+            ${docker_cmd[@]} /backup-nextcloud.sh || backup_ec=$?
+            # Change ownership of the backup to the current user, regardless
+            # of what happened during the backup.
+            ${docker_cmd[@]} chown -R "$(id -u):$(id -g)" "${BORG_REPO}"
+            exit $backup_ec
             ;;
     esac
 }

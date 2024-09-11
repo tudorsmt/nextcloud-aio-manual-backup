@@ -15,4 +15,6 @@ RUN set -ex; \
 
 ADD --chmod=744 backup-nextcloud.sh /
 
+USER root
+
 ENV BORG_RETENTION_POLICY="--keep-within=7d --keep-weekly=4 --keep-monthly=6"
