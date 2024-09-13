@@ -16,16 +16,19 @@ that the repository is cloned in the same directory where the `docker-compose.ya
 `.env` used by this file are present:
 
 ```
-$ tree -L 2 .
+$ tree -aL 2 .
 .
 ├── docker-compose.yaml
-└── nextcloud-aio-manual-backup
-    ├── backup-nextcloud.sh
-    ├── Dockerfile
-    ├── README.md
-    ├── run-backup.sh
-    └── storage
-
+├── .env
+├── nextcloud-aio-manual-backup
+│   ├── backup-nextcloud.sh
+│   ├── Dockerfile
+│   ├── .git
+│   ├── .gitignore
+│   ├── README.md
+│   ├── run-backup.sh
+│   └── storage
+└── run-docker-compose.sh
 ```
 
 `run-backup.sh` is the main script to use. This will auto-run the backup of
