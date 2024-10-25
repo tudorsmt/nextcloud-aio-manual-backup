@@ -11,7 +11,7 @@ DOCKER_LIB_DIR="/var/lib/docker"
 BORG_REPO="/mnt/backup/storage"
 
 BACKUP_IMAGE="nextcloud-aio-manual-backup"
-docker_cmd=(docker run -it --rm \
+docker_cmd=(docker run --rm \
             -v ${DOCKER_LIB_DIR}:/mnt/var/lib/docker
             -v "${BACKUP_STORAGE}:${BORG_REPO}"
             -e BORG_PASSPHRASE="${BORG_PASSPHRASE}"
