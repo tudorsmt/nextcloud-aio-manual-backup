@@ -37,11 +37,22 @@ do_backup() {
 }
 
 sanity_check () {
+    # Remove the xtrace flag when checing the passphrase, not to leak
+    # the password in the logs
+    xtrace_removed=0;
+    if [[ "$SHELLOPTS" =~ "xtrace" ]]; then
+        set +x;
+        xtrace_removed=1;
+    fi
     if [ -z "${BORG_PASSPHRASE-}" ]; then
         echo "Please set the environment variable BORG_PASSPHRASE"
         # Content does not matter, as will test against empty or not.
         is_err="1"
     fi
+    if [ "$xtrace_removed" -eq 1 ]; then
+        set -x;
+    fi
+
     if [ -z "${BORG_REPO-}" ]; then
         echo "Please set the environment variable BORG_PASSPHRASE"
         # Content does not matter, as will test against empty or not.
