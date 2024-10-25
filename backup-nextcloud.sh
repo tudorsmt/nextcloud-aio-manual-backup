@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu -o pipefail
+set -eux -o pipefail
 
 : ${DOCKER_VOLUMES_DIR:="/mnt/var/lib/docker/volumes"}
 # Change compression if too slow
@@ -26,11 +26,14 @@ main () {
 }
 
 do_backup() {
+    backup_ec=0
     borg_command=(borg create -s --list ${BORG_COMPRESSION} "::nexclud-aio-{now:%Y-%m-%dT%H:%M:%S}")
     for volume in "${DEFAULT_VOLUMES[@]}"; do
         borg_command+=("${DOCKER_VOLUMES_DIR}/${volume}")
     done
-    time "${borg_command[@]}"
+    time "${borg_command[@]}" || backup_ec=$?
+    echo "Backup finished with exit code ${backup_ec}"
+    return ${backup_ec}
 }
 
 sanity_check () {
