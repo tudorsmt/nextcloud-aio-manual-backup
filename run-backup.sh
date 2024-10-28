@@ -11,13 +11,13 @@ DOCKER_LIB_DIR="/var/lib/docker"
 BORG_REPO="/mnt/backup/storage"
 
 BACKUP_IMAGE="nextcloud-aio-manual-backup"
-docker_cmd=(docker run --rm \
-            -v ${DOCKER_LIB_DIR}:/mnt/var/lib/docker
-            -v "${BACKUP_STORAGE}:${BORG_REPO}"
-            -e BORG_PASSPHRASE="${BORG_PASSPHRASE}"
-            -e BORG_REPO="${BORG_REPO}"
-            "${BACKUP_IMAGE}"
-            )
+docker_run=(docker run --rm)
+docker_params=(-v ${DOCKER_LIB_DIR}:/mnt/var/lib/docker
+               -v "${BACKUP_STORAGE}:${BORG_REPO}"
+               -e BORG_PASSPHRASE="${BORG_PASSPHRASE}"
+               -e BORG_REPO="${BORG_REPO}"
+               "${BACKUP_IMAGE}"
+               )
 
 main() {
     trap _disable_maintenance_mode EXIT
@@ -29,16 +29,16 @@ main() {
                  "trigger the backup execution"
             ;;
         container)
-            ${docker_cmd[@]}
+            ${docker_run[@]} -it ${docker_params[@]}
             ;;
         *)
             mkdir -p "${BACKUP_STORAGE}"
             echo "Running the backup script"
             backup_ec=0
-            ${docker_cmd[@]} /backup-nextcloud.sh || backup_ec=$?
+            ${docker_run[@]} ${docker_params[@]} /backup-nextcloud.sh || backup_ec=$?
             # Change ownership of the backup to the current user, regardless
             # of what happened during the backup.
-            ${docker_cmd[@]} chown -R "$(id -u):$(id -g)" "${BORG_REPO}"
+            ${docker_run[@]} ${docker_params[@]} chown -R "$(id -u):$(id -g)" "${BORG_REPO}"
             exit $backup_ec
             ;;
     esac
