@@ -57,7 +57,8 @@ _maybe_build_backup_image() {
     if ! docker image ls -q "${BACKUP_IMAGE}" | grep -q "." ; then
         echo "Docker image "${BACKUP_IMAGE}" needed for backing up not found on host, building"
         pushd "${SCRIPT_DIR}"
-        docker build -t "${BACKUP_IMAGE}" .
+        # Use plain output, not fancy colorful one
+        BUILDKIT_PROGRESS=plain docker build -t "${BACKUP_IMAGE}" .
         popd
     else
         echo "Docker image "${BACKUP_IMAGE}" found on host, no need to build, will directly run"
