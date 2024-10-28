@@ -23,6 +23,7 @@ main () {
     do_backup
     prune_archives
     compact_archives
+    list_repo_contents
 }
 
 do_backup() {
@@ -31,8 +32,14 @@ do_backup() {
     for volume in "${DEFAULT_VOLUMES[@]}"; do
         borg_command+=("${DOCKER_VOLUMES_DIR}/${volume}")
     done
-    time "${borg_command[@]}" || backup_ec=$?
+    "${borg_command[@]}" || backup_ec=$?
     echo "Backup finished with exit code ${backup_ec}"
+    # EC 1 is warning
+    # https://borgbackup.readthedocs.io/en/stable/usage/general.html#return-codes
+    if [ ${backup_ec} -eq 1 ]; then
+        echo "Borg finished with warnings, see above logs. Warnings are still OK"
+        return 0
+    fi
     return ${backup_ec}
 }
 
@@ -89,9 +96,15 @@ list_repo_info () {
     borg info
 }
 
+list_repo_contents () {
+    echo "The Borg repo ${BORG_REPO} has the following contents:"
+    borg list
+}
+
 prune_archives() {
+    echo "Pruning Borg repo ${BORG_REPO} with retention policy '${BORG_RETENTION_POLICY}'"
     # Do not quote variable. We need expansion!
-    borg prune --stats ${BORG_RETENTION_POLICY}
+    borg prune --list --progress --stats ${BORG_RETENTION_POLICY}
 }
 compact_archives() {
     borg compact
