@@ -32,6 +32,13 @@ do_backup() {
     for volume in "${DEFAULT_VOLUMES[@]}"; do
         borg_command+=("${DOCKER_VOLUMES_DIR}/${volume}")
     done
+
+    # Disable inode check for files cache
+    # This should speed up backups, only the ctime and size of files are checked.
+    # As the backup source is always a new docker mount, inodes will always change.
+    # see https://borgbackup.readthedocs.io/en/stable/usage/create.html#description
+    borg_command+=("--files-cache" 'ctime,size')
+
     "${borg_command[@]}" || backup_ec=$?
     echo "Backup finished with exit code ${backup_ec}"
     # EC 1 is warning

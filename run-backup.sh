@@ -7,6 +7,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$(realpath "${SCRIPT_DIR}/../.env")"
 
 BACKUP_STORAGE="${SCRIPT_DIR}/storage"
+BORG_CACHE_DIR="${SCRIPT_DIR}/cache"
 DOCKER_LIB_DIR="/var/lib/docker"
 BORG_REPO="/mnt/backup/storage"
 
@@ -14,8 +15,10 @@ BACKUP_IMAGE="nextcloud-aio-manual-backup"
 docker_run=(docker run --rm)
 docker_params=(-v ${DOCKER_LIB_DIR}:/mnt/var/lib/docker
                -v "${BACKUP_STORAGE}:${BORG_REPO}"
+               -v "${BORG_CACHE_DIR}:/borg_cache"
                -e BORG_PASSPHRASE="${BORG_PASSPHRASE}"
                -e BORG_REPO="${BORG_REPO}"
+               -e BORG_CACHE_DIR="/borg_cache"
                "${BACKUP_IMAGE}"
                )
 
@@ -33,6 +36,7 @@ main() {
             ;;
         *)
             mkdir -p "${BACKUP_STORAGE}"
+            mkdir -p "${BORG_CACHE_DIR}"
             echo "Running the backup script"
             backup_ec=0
             ${docker_run[@]} ${docker_params[@]} /backup-nextcloud.sh || backup_ec=$?
