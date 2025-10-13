@@ -33,6 +33,11 @@ do_backup() {
         borg_command+=("${DOCKER_VOLUMES_DIR}/${volume}")
     done
 
+    # TODO: fix excludes to use a variable
+    # Exclude preview data - Redo setup in case of backup restore
+    # see https://github.com/nextcloud/previewgenerator?tab=readme-ov-file
+    borg_command+=("--exclude" '*/appdata_ocfn5ol8ba0p/preview')
+
     # Disable inode check for files cache
     # This should speed up backups, only the ctime and size of files are checked.
     # As the backup source is always a new docker mount, inodes will always change.
