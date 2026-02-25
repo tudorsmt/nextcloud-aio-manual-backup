@@ -50,11 +50,11 @@ main() {
 
 _enable_maintenance_mode() {
     echo "Enabling NextCloud Maintenance mode, so no unexpected changes happen"
-    docker compose exec nextcloud-aio-nextcloud sudo -u www-data PHP_MEMORY_LIMIT=512M php occ maintenance:mode --on
+    docker compose exec --user www-data -it nextcloud-aio-nextcloud php occ maintenance:mode --on
 }
 _disable_maintenance_mode() {
     echo "Disabling NextCloud Maintenance mode - ready to work"
-    docker compose exec nextcloud-aio-nextcloud sudo -u www-data PHP_MEMORY_LIMIT=512M php occ maintenance:mode --off
+    docker compose exec --user www-data -it nextcloud-aio-nextcloud php occ maintenance:mode --off
 }
 
 _maybe_build_backup_image() {
